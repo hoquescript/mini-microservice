@@ -12,12 +12,13 @@ const posts = {
 }
 
 app.get('/posts', (req, res) => {
+  console.log(posts)
   res.send(posts)
 })
 
 app.post('/events', (req, res) => {
   const { type, data } = req.body;
-  console.log(data)
+
   if(type === 'PostCreated') {
     const {id, title} = data;
 
@@ -25,11 +26,20 @@ app.post('/events', (req, res) => {
   }
 
   if(type === 'CommentCreated') {
-    const { postId, id, content } = data;
+    const { postId, id, content, status } = data;
 
     posts[postId].comments.push({
-      id, content
+      id, content, status
     })
+  }
+
+  if(type === 'CommentUpdated'){
+    const { postId, id, content, status } = data;
+
+    const comment = posts[postId].comments.find(comment => comment.id === id);
+
+    comment.status = status;
+    comment.content = content;
   }
   res.send({})
 })
